@@ -1,7 +1,7 @@
 #======================================================================
 # GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base
-# 通用设置 + 分流 DNS + TUN(防泄露)。proxies/proxy-groups/rules 由 subconverter 注入。
-# DNS：国内默认(墙内最稳) + 境外域名走境外DNS(防污染) + CN走国内DNS。
+# DNS 方案：redir-host(真实解析，邮箱/内网/App全兼容) + TUN dns-hijack(不泄露)
+#   内网域名 → 内网 DNS；国内 → 国内 DoH；境外 → 境外 DoH。
 #======================================================================
 mixed-port: 7890
 allow-lan: true
@@ -24,9 +24,9 @@ geox-url:
 
 profile:
   store-selected: true
-  store-fake-ip: true
+  store-fake-ip: false        # 已不用 fake-ip，关掉缓存避免旧假 IP 残留
 
-# TUN：dns-hijack 负责防 DNS 泄露；strict-route 关闭，避免直连/国内站点被误收进 TUN
+# TUN：dns-hijack 把全系统 DNS 收进 Clash → 不泄露；strict-route 关，避免误伤直连/内网
 tun:
   enable: true
   stack: mixed
@@ -39,53 +39,32 @@ tun:
 
 dns:
   enable: true
-  ipv6: false                   # 关掉 DNS 的 IPv6，避免国内站点因 AAAA 解析异常打不开
+  ipv6: false
   listen: 0.0.0.0:53
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  fake-ip-filter:
-    - '*.lan'
-    - '*.local'
-    - '*.localhost'
-    - 'localhost.ptlogin2.qq.com'
-    - '+.msftconnecttest.com'
-    - '+.msftncsi.com'
-    - 'time.*.com'
-    - 'time.*.gov'
-    - 'ntp.*.com'
-    - '+.market.xiaomi.com'
-    - '+.qq.com'
-    - '+.wechat.com'
-    # ↓↓↓ 邮件相关：必须真实解析，否则 fake-ip 会让 IMAP/SMTP 报 (null)/SSL 失败
-    - '+.outlook.com'
-    - '+.office365.com'
-    - '+.office.com'
-    - '+.microsoftonline.com'
-    - '+.live.com'
-    - '+.hotmail.com'
-    - '+.msftidentity.com'
-    - '+.msidentity.com'
-    - '+.gmail.com'
-    - '+.googlemail.com'
-    - 'autodiscover.*'
-    - 'imap.*'
-    - 'smtp.*'
-    - 'pop.*'
-    - 'pop3.*'
-    - 'mail.*'
-  default-nameserver:           # 引导：解析 DoH 域名本身，必须纯 IP
+  enhanced-mode: redir-host    # ★真实解析：邮箱/内网/各类App全兼容
+  use-hosts: true
+  respect-rules: false
+  default-nameserver:          # 引导：解析下面 DoH 域名本身，必须纯 IP
     - 223.5.5.5
     - 119.29.29.29
-  proxy-server-nameserver:      # 解析代理节点自身域名，用国内 DNS
+  proxy-server-nameserver:     # 解析代理节点自身域名
     - 'https://doh.pub/dns-query'
     - 'https://dns.alidns.com/dns-query'
-  nameserver:                   # ★默认：国内 DNS（墙内最稳，不依赖境外可达性）
+  direct-nameserver:           # 直连域名解析（国内 DoH，快）
+    - 'https://dns.alidns.com/dns-query'
+    - 'https://doh.pub/dns-query'
+  nameserver:                  # 默认：国内 DoH（墙内最稳）
     - 'https://doh.pub/dns-query'
     - 'https://dns.alidns.com/dns-query'
   nameserver-policy:
-    'geosite:cn,private':       # 国内 / 内网域名 → 国内 DNS
+    # ★内网域名 → 内网 DNS（10.0.60.4 须直连可达：在公司网或挂上内网VPN）
+    '+.teamway.com':
+      - '10.0.60.4'
+    # 国内 / 内网网段域名 → 国内 DoH
+    'geosite:cn,private':
       - 'https://dns.alidns.com/dns-query'
       - 'https://doh.pub/dns-query'
-    'geosite:geolocation-!cn':  # ★境外域名 → 境外加密 DNS（防污染）
+    # 境外域名 → 境外 DoH（防污染）
+    'geosite:geolocation-!cn':
       - 'https://cloudflare-dns.com/dns-query'
       - 'https://dns.google/dns-query'
