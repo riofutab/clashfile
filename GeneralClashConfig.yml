@@ -1,7 +1,7 @@
 #======================================================================
-# GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base
-# DNS 方案：redir-host(真实解析，邮箱/内网/App全兼容) + TUN dns-hijack(不泄露)
-#   内网域名 → 内网 DNS；国内 → 国内 DoH；境外 → 境外 DoH。
+# GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base（方案A）
+# 国内域名→国内DoH(正确IP,国内站能开) 境外→境外DoH(隐私) 内网→内网DNS
+# redir-host(邮箱/内网兼容) + TUN dns-hijack(消灭ISP明文泄露)
 #======================================================================
 mixed-port: 7890
 allow-lan: true
@@ -24,9 +24,8 @@ geox-url:
 
 profile:
   store-selected: true
-  store-fake-ip: false        # 已不用 fake-ip，关掉缓存避免旧假 IP 残留
+  store-fake-ip: false
 
-# TUN：dns-hijack 把全系统 DNS 收进 Clash → 不泄露；strict-route 关，避免误伤直连/内网
 tun:
   enable: true
   stack: mixed
@@ -36,24 +35,42 @@ tun:
   auto-route: true
   auto-detect-interface: true
   strict-route: false
+  # ★把局域网/私网网段排除出 TUN：去内网(10.0.60.4等)的流量绕过隧道、直连物理网卡
+  route-exclude-address:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 127.0.0.0/8
+    - 169.254.0.0/16
+    - 100.64.0.0/10
+    - 224.0.0.0/4
+    - 255.255.255.255/32
 
 dns:
   enable: true
   ipv6: false
   listen: 0.0.0.0:53
-  enhanced-mode: redir-host    # ★真实解析：邮箱/内网/各类App全兼容
+  enhanced-mode: redir-host
   use-hosts: true
-  respect-rules: true          # ★DNS查询纳入路由：境外DoH走节点(墙内才连得上)、国内DoH直连
-  default-nameserver:          # 引导：解析下面 DoH 域名本身，必须纯 IP（仅用于bootstrap，不会出现在泄露测试里）
+  respect-rules: true
+  default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
-  proxy-server-nameserver:     # 解析代理节点自身域名（直连可达，仅bootstrap，不会出现在测试里）
+  proxy-server-nameserver:
     - 'https://doh.pub/dns-query'
     - 'https://dns.alidns.com/dns-query'
-  nameserver:                  # ★所有域名解析全部走【境外】DoH（经节点出去）→ 测试里只剩境外解析器
+  direct-nameserver:           # 直连(国内)域名 → 国内DoH → 拿到正确国内IP(exmail等能开)
+    - 'https://dns.alidns.com/dns-query'
+    - 'https://doh.pub/dns-query'
+  nameserver:                  # 代理/境外域名 → 境外DoH(隐私防污染)
     - 'https://cloudflare-dns.com/dns-query'
     - 'https://dns.google/dns-query'
   nameserver-policy:
-    # 只有内网域名走内网 DNS（私网地址，不会出现在公网泄露测试里）
-    '+.teamway.com':
+    '+.teamway.com':           # 内网 → 内网DNS
       - '10.0.60.4'
+    'geosite:cn,private':      # 国内域名 → 国内DoH(显式,确保拿正确国内IP)
+      - 'https://dns.alidns.com/dns-query'
+      - 'https://doh.pub/dns-query'
+    'geosite:geolocation-!cn': # 境外域名 → 境外DoH
+      - 'https://cloudflare-dns.com/dns-query'
+      - 'https://dns.google/dns-query'
