@@ -44,16 +44,27 @@ dns:
   enhanced-mode: redir-host    # ★真实解析：邮箱/内网/各类App全兼容
   use-hosts: true
   respect-rules: true          # ★DNS查询纳入路由：境外DoH走节点(墙内才连得上)、国内DoH直连
-  default-nameserver:          # 引导：解析下面 DoH 域名本身，必须纯 IP（仅用于bootstrap，不会出现在泄露测试里）
+  default-nameserver:          # 引导：解析下面 DoH 域名本身，必须纯 IP
     - 223.5.5.5
     - 119.29.29.29
-  proxy-server-nameserver:     # 解析代理节点自身域名（直连可达，仅bootstrap，不会出现在测试里）
+  proxy-server-nameserver:     # 解析代理节点自身域名
     - 'https://doh.pub/dns-query'
     - 'https://dns.alidns.com/dns-query'
-  nameserver:                  # ★所有域名解析全部走【境外】DoH（经节点出去）→ 测试里只剩境外解析器
-    - 'https://cloudflare-dns.com/dns-query'
-    - 'https://dns.google/dns-query'
+  direct-nameserver:           # 直连域名解析（国内 DoH，快）
+    - 'https://dns.alidns.com/dns-query'
+    - 'https://doh.pub/dns-query'
+  nameserver:                  # 默认：国内 DoH（墙内最稳）
+    - 'https://doh.pub/dns-query'
+    - 'https://dns.alidns.com/dns-query'
   nameserver-policy:
-    # 只有内网域名走内网 DNS（私网地址，不会出现在公网泄露测试里）
+    # ★内网域名 → 内网 DNS（10.0.60.4 须直连可达：在公司网或挂上内网VPN）
     '+.teamway.com':
       - '10.0.60.4'
+    # 国内 / 内网网段域名 → 国内 DoH
+    'geosite:cn,private':
+      - 'https://dns.alidns.com/dns-query'
+      - 'https://doh.pub/dns-query'
+    # 境外域名 → 境外 DoH（防污染）
+    'geosite:geolocation-!cn':
+      - 'https://cloudflare-dns.com/dns-query'
+      - 'https://dns.google/dns-query'
