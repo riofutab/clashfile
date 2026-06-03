@@ -1,0 +1,67 @@
+#======================================================================
+# GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base（精简版·推荐）
+# 仅含：通用设置 + 分流 DNS。proxies/proxy-groups/rules 全由 subconverter 注入。
+# DNS 策略：境外 DNS 默认兜底；只有 CN(含内网) 域名走国内 DNS。
+# DNS 分流用的“通用规则集”= mihomo 内置 geosite:cn —— 无需任何外部文件，最全且随 geox-url 自动更新。
+#======================================================================
+mixed-port: 7890
+allow-lan: true
+bind-address: "*"
+mode: rule
+log-level: info
+ipv6: true
+external-controller: 127.0.0.1:9090
+
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: strict
+geodata-mode: true
+geo-auto-update: true
+geo-update-interval: 24
+geox-url:
+  geoip: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip-lite.dat"
+  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country-lite.mmdb"
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# TUN（透明代理/全局接管，按需启用）
+# tun:
+#   enable: true
+#   stack: mixed
+#   dns-hijack: [any:53]
+#   auto-route: true
+#   auto-detect-interface: true
+
+dns:
+  enable: true
+  ipv6: true
+  listen: 0.0.0.0:53
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - '*.local'
+    - '*.localhost'
+    - 'localhost.ptlogin2.qq.com'
+    - '+.msftconnecttest.com'
+    - '+.msftncsi.com'
+    - 'time.*.com'
+    - 'time.*.gov'
+    - 'ntp.*.com'
+    - '+.market.xiaomi.com'
+  default-nameserver:           # 引导：解析下面 DoH 域名本身，必须纯 IP
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:      # 解析代理节点自身域名，用国内 DNS，避免自环
+    - 'https://doh.pub/dns-query'
+    - 'https://dns.alidns.com/dns-query'
+  nameserver:                   # ★默认/兜底：所有域名走【境外】加密 DNS
+    - 'https://cloudflare-dns.com/dns-query'
+    - 'https://dns.google/dns-query'
+  nameserver-policy:            # ★只有 CN(含内网) → 走【国内】DNS
+    'geosite:cn,private':
+      - 'https://dns.alidns.com/dns-query'
+      - 'https://doh.pub/dns-query'
