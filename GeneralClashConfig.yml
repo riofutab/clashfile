@@ -1,8 +1,7 @@
 #======================================================================
 # GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base（精简版·推荐）
-# 仅含：通用设置 + 分流 DNS。proxies/proxy-groups/rules 全由 subconverter 注入。
-# DNS 策略：境外 DNS 默认兜底；只有 CN(含内网) 域名走国内 DNS。
-# DNS 分流用的“通用规则集”= mihomo 内置 geosite:cn —— 无需任何外部文件，最全且随 geox-url 自动更新。
+# 通用设置 + 分流 DNS + TUN(防 DNS 泄露)。proxies/proxy-groups/rules 由 subconverter 注入。
+# DNS：境外兜底；只有 CN(含内网) 走国内 DNS（geosite:cn）。
 #======================================================================
 mixed-port: 7890
 allow-lan: true
@@ -27,13 +26,18 @@ profile:
   store-selected: true
   store-fake-ip: true
 
-# TUN（透明代理/全局接管，按需启用）
-# tun:
-#   enable: true
-#   stack: mixed
-#   dns-hijack: [any:53]
-#   auto-route: true
-#   auto-detect-interface: true
+# ★ TUN：把全系统 DNS/流量都收进 Clash，杜绝 DNS 绕过到本地 ISP
+#   注意：TUN 需要管理员权限/Service Mode；桌面客户端(如 Clash Verge Rev)请在界面里
+#   先“安装/开启 Service Mode”再打开 TUN，否则核心创建虚拟网卡会失败。
+tun:
+  enable: true
+  stack: mixed
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
 
 dns:
   enable: true
@@ -41,6 +45,7 @@ dns:
   listen: 0.0.0.0:53
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  respect-rules: false          # DNS 解析不再受路由规则影响，避免解析阶段绕路泄露
   fake-ip-filter:
     - '*.lan'
     - '*.local'
@@ -52,7 +57,7 @@ dns:
     - 'time.*.gov'
     - 'ntp.*.com'
     - '+.market.xiaomi.com'
-  default-nameserver:           # 引导：解析下面 DoH 域名本身，必须纯 IP
+  default-nameserver:           # 引导：解析 DoH 域名本身，必须纯 IP
     - 223.5.5.5
     - 119.29.29.29
   proxy-server-nameserver:      # 解析代理节点自身域名，用国内 DNS，避免自环
@@ -61,7 +66,7 @@ dns:
   nameserver:                   # ★默认/兜底：所有域名走【境外】加密 DNS
     - 'https://cloudflare-dns.com/dns-query'
     - 'https://dns.google/dns-query'
-  nameserver-policy:            # ★只有 CN(含内网) → 走【国内】DNS
+  nameserver-policy:            # ★只有 CN(含内网) → 走【国内】加密 DNS
     'geosite:cn,private':
       - 'https://dns.alidns.com/dns-query'
       - 'https://doh.pub/dns-query'
