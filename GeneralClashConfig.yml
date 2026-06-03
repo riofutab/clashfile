@@ -43,7 +43,7 @@ dns:
   listen: 0.0.0.0:53
   enhanced-mode: redir-host    # ★真实解析：邮箱/内网/各类App全兼容
   use-hosts: true
-  respect-rules: false
+  respect-rules: true          # ★DNS查询纳入路由：境外DoH走节点(墙内才连得上)、国内DoH直连
   default-nameserver:          # 引导：解析下面 DoH 域名本身，必须纯 IP
     - 223.5.5.5
     - 119.29.29.29
