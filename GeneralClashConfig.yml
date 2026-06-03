@@ -56,6 +56,23 @@ dns:
     - '+.market.xiaomi.com'
     - '+.qq.com'
     - '+.wechat.com'
+    # ↓↓↓ 邮件相关：必须真实解析，否则 fake-ip 会让 IMAP/SMTP 报 (null)/SSL 失败
+    - '+.outlook.com'
+    - '+.office365.com'
+    - '+.office.com'
+    - '+.microsoftonline.com'
+    - '+.live.com'
+    - '+.hotmail.com'
+    - '+.msftidentity.com'
+    - '+.msidentity.com'
+    - '+.gmail.com'
+    - '+.googlemail.com'
+    - 'autodiscover.*'
+    - 'imap.*'
+    - 'smtp.*'
+    - 'pop.*'
+    - 'pop3.*'
+    - 'mail.*'
   default-nameserver:           # 引导：解析 DoH 域名本身，必须纯 IP
     - 223.5.5.5
     - 119.29.29.29
