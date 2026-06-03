@@ -1,0 +1,11 @@
+# NAME: Copilot
+# 用途: GitHub Copilot 代码补全 + 微软 Copilot(原 Bing Chat)
+# 对应网站: githubcopilot.com, copilot.microsoft.com
+# 注意: GitHub Copilot 还会用到 github.com / api.github.com，
+#       这些由你的 GitHub/节点选择 规则覆盖
+DOMAIN-SUFFIX,githubcopilot.com
+DOMAIN-SUFFIX,copilot.github.com
+DOMAIN,copilot-proxy.githubusercontent.com
+DOMAIN-SUFFIX,copilot.microsoft.com
+DOMAIN-SUFFIX,copilot.cloud.microsoft
+DOMAIN-SUFFIX,sydney.bing.com

@@ -1,0 +1,6 @@
+# NAME: Grok (xAI)
+# 用途: xAI Grok 独立站(非 X/Twitter 内嵌)
+# 对应网站: grok.com, x.ai
+# 注意: 只收 xAI 专属域名，不含 x.com/twitter，避免误伤 Twitter
+DOMAIN-SUFFIX,x.ai
+DOMAIN-SUFFIX,grok.com

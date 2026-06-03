@@ -1,0 +1,14 @@
+# NAME: Gemini
+# 用途: Google Gemini / AI Studio / DeepMind / Google Labs
+# 对应网站: gemini.google.com, aistudio.google.com, ai.google.dev
+# 注意: Gemini 还依赖 Google 账号登录域名(accounts.google.com 等)，
+#       这些由你的 Google/节点选择 规则覆盖，本表只收 Gemini 专属域名
+DOMAIN-SUFFIX,gemini.google.com
+DOMAIN-SUFFIX,bard.google.com
+DOMAIN-SUFFIX,aistudio.google.com
+DOMAIN-SUFFIX,makersuite.google.com
+DOMAIN-SUFFIX,generativelanguage.googleapis.com
+DOMAIN-SUFFIX,ai.google.dev
+DOMAIN-SUFFIX,deepmind.google
+DOMAIN-SUFFIX,deepmind.com
+DOMAIN-SUFFIX,labs.google

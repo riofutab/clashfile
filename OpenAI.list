@@ -1,0 +1,11 @@
+# NAME: OpenAI
+# 用途: ChatGPT 网页 / OpenAI 平台·API / Sora 视频
+# 对应网站: chatgpt.com, openai.com, sora.com
+DOMAIN-SUFFIX,openai.com
+DOMAIN-SUFFIX,chatgpt.com
+DOMAIN-SUFFIX,oaistatic.com
+DOMAIN-SUFFIX,oaiusercontent.com
+DOMAIN-SUFFIX,sora.com
+DOMAIN-SUFFIX,ai.com
+# 登录验证码(Arkose)，ChatGPT 登录需要；如担心误伤其它站可删
+DOMAIN-SUFFIX,arkoselabs.com

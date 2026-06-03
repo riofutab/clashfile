@@ -1,0 +1,6 @@
+# NAME: Claude
+# 用途: Claude 网页聊天端
+# 对应网站: claude.ai, claude.com
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,claude.com
+DOMAIN-SUFFIX,claudeusercontent.com
