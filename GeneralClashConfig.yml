@@ -1,7 +1,7 @@
 #======================================================================
-# GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base（精简版·推荐）
-# 通用设置 + 分流 DNS + TUN(防 DNS 泄露)。proxies/proxy-groups/rules 由 subconverter 注入。
-# DNS：境外兜底；只有 CN(含内网) 走国内 DNS（geosite:cn）。
+# GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base
+# 通用设置 + 分流 DNS + TUN(防泄露)。proxies/proxy-groups/rules 由 subconverter 注入。
+# DNS：国内默认(墙内最稳) + 境外域名走境外DNS(防污染) + CN走国内DNS。
 #======================================================================
 mixed-port: 7890
 allow-lan: true
@@ -26,9 +26,7 @@ profile:
   store-selected: true
   store-fake-ip: true
 
-# ★ TUN：把全系统 DNS/流量都收进 Clash，杜绝 DNS 绕过到本地 ISP
-#   注意：TUN 需要管理员权限/Service Mode；桌面客户端(如 Clash Verge Rev)请在界面里
-#   先“安装/开启 Service Mode”再打开 TUN，否则核心创建虚拟网卡会失败。
+# TUN：dns-hijack 负责防 DNS 泄露；strict-route 关闭，避免直连/国内站点被误收进 TUN
 tun:
   enable: true
   stack: mixed
@@ -37,15 +35,14 @@ tun:
     - "tcp://any:53"
   auto-route: true
   auto-detect-interface: true
-  strict-route: true
+  strict-route: false
 
 dns:
   enable: true
-  ipv6: true
+  ipv6: false                   # 关掉 DNS 的 IPv6，避免国内站点因 AAAA 解析异常打不开
   listen: 0.0.0.0:53
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  respect-rules: false          # DNS 解析不再受路由规则影响，避免解析阶段绕路泄露
   fake-ip-filter:
     - '*.lan'
     - '*.local'
@@ -57,16 +54,21 @@ dns:
     - 'time.*.gov'
     - 'ntp.*.com'
     - '+.market.xiaomi.com'
+    - '+.qq.com'
+    - '+.wechat.com'
   default-nameserver:           # 引导：解析 DoH 域名本身，必须纯 IP
     - 223.5.5.5
     - 119.29.29.29
-  proxy-server-nameserver:      # 解析代理节点自身域名，用国内 DNS，避免自环
+  proxy-server-nameserver:      # 解析代理节点自身域名，用国内 DNS
     - 'https://doh.pub/dns-query'
     - 'https://dns.alidns.com/dns-query'
-  nameserver:                   # ★默认/兜底：所有域名走【境外】加密 DNS
-    - 'https://cloudflare-dns.com/dns-query'
-    - 'https://dns.google/dns-query'
-  nameserver-policy:            # ★只有 CN(含内网) → 走【国内】加密 DNS
-    'geosite:cn,private':
+  nameserver:                   # ★默认：国内 DNS（墙内最稳，不依赖境外可达性）
+    - 'https://doh.pub/dns-query'
+    - 'https://dns.alidns.com/dns-query'
+  nameserver-policy:
+    'geosite:cn,private':       # 国内 / 内网域名 → 国内 DNS
       - 'https://dns.alidns.com/dns-query'
       - 'https://doh.pub/dns-query'
+    'geosite:geolocation-!cn':  # ★境外域名 → 境外加密 DNS（防污染）
+      - 'https://cloudflare-dns.com/dns-query'
+      - 'https://dns.google/dns-query'
