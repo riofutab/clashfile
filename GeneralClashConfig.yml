@@ -34,7 +34,7 @@ tun:
     - "tcp://any:53"
   auto-route: true
   auto-detect-interface: true
-  strict-route: false
+  strict-route: true                       # 强制接管(含终端DNS)；内网已由 route-exclude-address 排除走直连
   # ★把局域网/私网网段排除出 TUN：去内网(10.0.60.4等)的流量绕过隧道、直连物理网卡
   route-exclude-address:
     - 10.0.0.0/8
