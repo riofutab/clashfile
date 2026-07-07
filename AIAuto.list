@@ -1,0 +1,34 @@
+# AIAuto.list —— 自动聚合(手工种子 + 上游权威源)，由 update-ai.yml 每日刷新，请勿手改
+# 首次提交为手工种子；Action 运行后并入 blackmatrix7 / cmliu 的最新 AI 规则
+DOMAIN-SUFFIX,ai.com
+DOMAIN-SUFFIX,ai.google.dev
+DOMAIN-SUFFIX,aistudio.google.com
+DOMAIN-SUFFIX,anthropic.com
+DOMAIN-SUFFIX,arkoselabs.com
+DOMAIN-SUFFIX,bard.google.com
+DOMAIN-SUFFIX,chatgpt.com
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,claude.com
+DOMAIN-SUFFIX,claudeusercontent.com
+DOMAIN-SUFFIX,copilot.cloud.microsoft
+DOMAIN-SUFFIX,copilot.github.com
+DOMAIN-SUFFIX,copilot.microsoft.com
+DOMAIN-SUFFIX,deepmind.com
+DOMAIN-SUFFIX,deepmind.google
+DOMAIN-SUFFIX,gemini.google.com
+DOMAIN-SUFFIX,generativelanguage.googleapis.com
+DOMAIN-SUFFIX,githubcopilot.com
+DOMAIN-SUFFIX,grok.com
+DOMAIN-SUFFIX,labs.google
+DOMAIN-SUFFIX,makersuite.google.com
+DOMAIN-SUFFIX,meta.ai
+DOMAIN-SUFFIX,meta.com
+DOMAIN-SUFFIX,oaistatic.com
+DOMAIN-SUFFIX,oaiusercontent.com
+DOMAIN-SUFFIX,openai.com
+DOMAIN-SUFFIX,perplexity.ai
+DOMAIN-SUFFIX,pplx.ai
+DOMAIN-SUFFIX,sora.com
+DOMAIN-SUFFIX,sydney.bing.com
+DOMAIN-SUFFIX,x.ai
+DOMAIN,copilot-proxy.githubusercontent.com

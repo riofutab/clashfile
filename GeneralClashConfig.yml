@@ -2,13 +2,14 @@
 # GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base（方案A）
 # 国内域名→国内DoH(正确IP,国内站能开) 境外→境外DoH(隐私) 内网→内网DNS
 # redir-host(邮箱/内网兼容) + TUN dns-hijack(消灭ISP明文泄露)
+# 通用化：去掉 respect-rules / direct-nameserver 两个较新字段，主流 mihomo 内核均可导入
 #======================================================================
 mixed-port: 7890
 allow-lan: true
 bind-address: "*"
 mode: rule
 log-level: info
-ipv6: true
+ipv6: false
 external-controller: 127.0.0.1:9090
 
 unified-delay: true
@@ -51,16 +52,12 @@ dns:
   ipv6: false
   listen: 0.0.0.0:53
   enhanced-mode: redir-host
-  respect-rules: true
   default-nameserver:                      # 引导，纯IP
     - 223.5.5.5
     - 119.29.29.29
   nameserver:                              # 境外/代理域名 → 境外DoH(隐私防污染)
     - 'https://cloudflare-dns.com/dns-query'
     - 'https://dns.google/dns-query'
-  direct-nameserver:                       # 国内/直连域名 → 国内DNS(明文,最快)
-    - 223.5.5.5
-    - 119.29.29.29
   nameserver-policy:                       # 值必须单字符串(手机核心不收列表)
     '+.teamway.com': '10.0.60.4'                                       # 内网 → 内网DNS
     'geosite:cn,private': '223.5.5.5'                                  # 国内域名 → 阿里DNS(明文,快)
