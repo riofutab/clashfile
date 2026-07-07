@@ -55,10 +55,13 @@ dns:
   default-nameserver:                      # 引导，纯IP
     - 223.5.5.5
     - 119.29.29.29
-  nameserver:                              # 境外/代理域名 → 境外DoH(隐私防污染)
-    - 'https://cloudflare-dns.com/dns-query'
-    - 'https://dns.google/dns-query'
+  proxy-server-nameserver:                 # 解析代理节点域名 → 国内DNS直连(快、避免自举卡顿)
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:                              # 境外/代理域名 → 境外DoH，经「节点选择」出口查询(快 + 不泄露)
+    - 'https://cloudflare-dns.com/dns-query#🚀 节点选择'
+    - 'https://dns.google/dns-query#🚀 节点选择'
   nameserver-policy:                       # 值必须单字符串(手机核心不收列表)
     '+.teamway.com': '10.0.60.4'                                       # 内网 → 内网DNS
     'geosite:cn,private': '223.5.5.5'                                  # 国内域名 → 阿里DNS(明文,快)
-    'geosite:geolocation-!cn': 'https://cloudflare-dns.com/dns-query'  # 境外域名 → 境外DoH
+    'geosite:geolocation-!cn': 'https://cloudflare-dns.com/dns-query#🚀 节点选择'  # 境外域名 → DoH经代理出口
