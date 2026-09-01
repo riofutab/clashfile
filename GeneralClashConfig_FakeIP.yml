@@ -1,8 +1,12 @@
 #======================================================================
-# GeneralClashConfig.yml  —  subconverter 专用 clash_rule_base（方案A）
-# 国内域名→国内DoH(正确IP,国内站能开) 境外→境外DoH(隐私) 内网→内网DNS
-# redir-host(邮箱/内网兼容) + TUN dns-hijack(消灭ISP明文泄露)
-# 通用化：去掉 respect-rules / direct-nameserver 两个较新字段，主流 mihomo 内核均可导入
+# GeneralClashConfig_FakeIP.yml  —  fake-ip 高速变体（方案B，可选）
+# 与主模板(GeneralClashConfig.yml)唯一区别是 DNS 模式：
+#   redir-host：每个境外域名都要经代理 DoH 解析一次(冷查询 ~200ms)
+#   fake-ip  ：境外域名 0ms 返回假IP，真实解析由代理服务器远端完成 —— 更快且零泄露
+# 内网/国内/时间/推送等必须拿真实IP的域名已列入 fake-ip-filter，行为与主模板一致
+# 要求较新 mihomo 内核(fake-ip-filter 支持 geosite: 语法)；邮箱客户端等
+# 直连老应用若异常，把 ini 的 clash_rule_base 切回主模板即可
+# 切换方法：ACL4SSR_Online_Full.ini 末尾 clash_rule_base= 指向本文件
 #======================================================================
 mixed-port: 7890
 allow-lan: true
@@ -25,7 +29,7 @@ geox-url:
 
 profile:
   store-selected: true
-  store-fake-ip: false
+  store-fake-ip: true                      # fake-ip 映射持久化，重启后长连接不易断
 
 tun:
   enable: true
@@ -51,7 +55,7 @@ tun:
 #   DNS 被绕过的流量也能按域名规则正确分流(命中 AI/媒体/直连组，而不是掉进 GEOIP/漏网之鱼)
 sniffer:
   enable: true
-  force-dns-mapping: true      # redir-host 的 IP→域名映射也用嗅探结果修正
+  force-dns-mapping: true      # fake-ip 映射流量也用嗅探结果修正
   parse-pure-ip: true          # 纯IP连接也嗅探出域名再匹配规则
   override-destination: false  # 只用于规则匹配，不改写连接目标(兼容性最稳)
   sniff:
@@ -69,17 +73,35 @@ dns:
   enable: true
   ipv6: false
   listen: 0.0.0.0:53
-  enhanced-mode: redir-host
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  # ★命中即返回真实IP(其余一律秒回 fake-ip)：内网/国内直连站、探测/时间/推送/STUN 这类拿假IP会坏的域名
+  fake-ip-filter:
+    - "+.teamway.com"                      # 内网：流量被 route-exclude 绕过 TUN，必须真实IP
+    - "geosite:private"
+    - "geosite:cn"
+    - "geosite:connectivity-check"
+    - "+.lan"
+    - "+.local"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "+.pool.ntp.org"
+    - "time.*.com"
+    - "ntp.*.com"
+    - "+.time.edu.cn"
+    - "+.ntp.org.cn"
+    - "+.push.apple.com"
+    - "+.stun.*.*"
+    - "+.stun.*.*.*"
   default-nameserver:                      # 引导，纯IP
     - 223.5.5.5
     - 119.29.29.29
   proxy-server-nameserver:                 # 解析代理节点域名 → 国内DNS直连(快、避免自举卡顿)
     - 223.5.5.5
     - 119.29.29.29
-  nameserver:                              # 境外/代理域名 → 境外DoH，经「节点选择」出口查询(快 + 不泄露)
+  nameserver:                              # filter 命中域名与直连解析的兜底 → 境外DoH经代理(不泄露)
     - 'https://cloudflare-dns.com/dns-query#🚀 节点选择'
     - 'https://dns.google/dns-query#🚀 节点选择'
   nameserver-policy:                       # 值必须单字符串(手机核心不收列表)
     '+.teamway.com': '10.0.60.4'                                       # 内网 → 内网DNS
     'geosite:cn,private': '223.5.5.5'                                  # 国内域名 → 阿里DNS(明文,快)
-    'geosite:geolocation-!cn': 'https://cloudflare-dns.com/dns-query#🚀 节点选择'  # 境外域名 → DoH经代理出口
