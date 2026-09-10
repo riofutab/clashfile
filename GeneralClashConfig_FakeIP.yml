@@ -102,6 +102,17 @@ dns:
   nameserver:                              # filter 命中域名与直连解析的兜底 → 境外DoH经代理(不泄露)
     - 'https://cloudflare-dns.com/dns-query#🚀 节点选择'
     - 'https://dns.google/dns-query#🚀 节点选择'
+  # ★直连出口的域名用国内DNS解析，不经代理 —— 代理不可用时直连仍然正常
+  direct-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  direct-nameserver-follow-policy: false
   nameserver-policy:                       # 值必须单字符串(手机核心不收列表)
     '+.teamway.com': '10.0.60.4'                                       # 内网 → 内网DNS
     'geosite:cn,private': '223.5.5.5'                                  # 国内域名 → 阿里DNS(明文,快)
+    # ★以下都在 fake-ip-filter 里(需要真实IP)，若不指定就会落到 nameserver 走代理DoH。
+    #   代理一旦抖动，系统会判定「无网络」、时间同步和推送一起出问题。全部改走国内DNS。
+    'geosite:connectivity-check': '223.5.5.5'                          # 联网探测(captive portal)
+    '+.pool.ntp.org,time.*.com,ntp.*.com,+.time.edu.cn,+.ntp.org.cn': '223.5.5.5'   # 授时
+    '+.push.apple.com': '223.5.5.5'                                    # APNs 推送
+    '+.msftconnecttest.com,+.msftncsi.com': '223.5.5.5'                # Windows 联网探测
