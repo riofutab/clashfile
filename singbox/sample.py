@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 NODE = {
-    'type': 'hysteria2', 'tag': '🇺🇸 美国 01 · GIA Hy2', 'server': 'example.com', 'server_port': 443,
+    'type': 'hysteria2', 'tag': '🇺🇸 US 01 · GIA Hy2', 'server': 'example.com', 'server_port': 443,
     'server_ports': ['31000:31499'], 'hop_interval': '30s', 'password': 'x',
     'tls': {'enabled': True, 'server_name': 'example.com', 'alpn': ['h3']},
 }
