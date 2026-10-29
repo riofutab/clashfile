@@ -1,0 +1,84 @@
+name: 生成 sing-box 订阅模板 (singbox-dist)
+
+# famsub Worker 给 sing-box 客户端的配置 = 本模板 + Xboard 节点。
+# 规则取自 subconverter 用 riofutab_xboard.ini 生成的 Clash 配置，与 Clash 订阅逐条一致。
+on:
+  schedule:
+    - cron: '0 20 * * *'    # 每天 UTC 20:00 ≈ 北京 04:00，在 update-ai.yml 之后
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['singbox/**', '.github/workflows/singbox.yml']
+
+permissions:
+  contents: write
+
+env:
+  INI_URL: https://raw.githubusercontent.com/riofutab/ACL4SSR/main/Clash/config/riofutab_xboard.ini
+  SUBAPI: https://subconverter.paeony.org/sub
+  SING_BOX_VERSION: 1.14.4
+  SING_BOX_SHA256: 699a1b510aa4396b2176d32d1181920399ebf1e267835da6f3b598d0f7c24968
+  # 低于这些下限说明 subconverter 或上游规则拉取出了问题，宁可不发布，也不能用残缺模板覆盖正常的
+  MIN_RULES: 100
+  MIN_RULES_BYTES: 300000
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 单元测试
+        run: cd singbox && python3 -m unittest test_build.py
+
+      - name: 拉取 ini 与 Clash 规则
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sb
+          curl -fsSL --max-time 60 "$INI_URL" -o /tmp/sb/xboard.ini
+          # 规则与节点无关，给一个假节点即可；UA 不能是 Python 默认值（Cloudflare 会拦）
+          node='hysteria2://x@example.com:443?sni=example.com#placeholder'
+          curl -fsSL --max-time 300 -A 'singbox-dist/1.0' -G "$SUBAPI" \
+            --data-urlencode target=clash --data-urlencode "url=$node" \
+            --data-urlencode "config=$INI_URL" -d list=false -d add_emoji=false -d remove_emoji=false \
+            -o /tmp/sb/clash.yaml
+          grep -q '^rules:' /tmp/sb/clash.yaml
+
+      - name: 生成模板
+        run: python3 singbox/build.py /tmp/sb/xboard.ini /tmp/sb/clash.yaml /tmp/sb/out
+
+      - name: 体积与条数下限
+        run: |
+          set -euo pipefail
+          n=$(python3 -c "import json;print(len(json.load(open('/tmp/sb/out/rules.json'))))")
+          b=$(stat -c %s /tmp/sb/out/rules.json)
+          echo "rules=$n bytes=$b"
+          [ "$n" -ge "$MIN_RULES" ] && [ "$b" -ge "$MIN_RULES_BYTES" ]
+
+      - name: sing-box check
+        run: |
+          set -euo pipefail
+          cd /tmp/sb
+          curl -fsSL -o sb.tgz "https://github.com/SagerNet/sing-box/releases/download/v${SING_BOX_VERSION}/sing-box-${SING_BOX_VERSION}-linux-amd64.tar.gz"
+          echo "${SING_BOX_SHA256}  sb.tgz" | sha256sum -c -
+          tar xzf sb.tgz
+          python3 "$GITHUB_WORKSPACE/singbox/sample.py" out sample.json
+          "./sing-box-${SING_BOX_VERSION}-linux-amd64/sing-box" check -c sample.json
+
+      - name: 发布到 singbox-dist 分支（仅在有变化时）
+        run: |
+          set -euo pipefail
+          if git fetch -q origin singbox-dist 2>/dev/null \
+            && git show FETCH_HEAD:base.json | cmp -s - /tmp/sb/out/base.json \
+            && git show FETCH_HEAD:rules.json | cmp -s - /tmp/sb/out/rules.json; then
+            echo "无变化，跳过发布"; exit 0
+          fi
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git checkout -q --orphan singbox-dist-new
+          git rm -rq --cached .
+          cp /tmp/sb/out/base.json /tmp/sb/out/rules.json .
+          git add base.json rules.json
+          git commit -qm "chore: 更新 sing-box 订阅模板"
+          # 单提交分支、强推：只保留最新模板，不在 master 上堆每日提交
+          git push -qf origin HEAD:singbox-dist
