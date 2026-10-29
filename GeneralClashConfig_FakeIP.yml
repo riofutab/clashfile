@@ -120,3 +120,16 @@ dns:
     '+.pool.ntp.org,time.*.com,ntp.*.com,+.time.edu.cn,+.ntp.org.cn': '223.5.5.5'   # 授时
     '+.push.apple.com': '223.5.5.5'                                    # APNs 推送
     '+.msftconnecttest.com,+.msftncsi.com': '223.5.5.5'                # Windows 联网探测
+
+# ★规则集由客户端自己拉取、每天更新，不内联进订阅(大表内联会撑大订阅并拖慢逐条匹配)。
+#   ini 里用 []RULE-SET,<名字> 引用，名字必须和这里一致，否则整份配置加载失败。
+#   behavior: domain 按域名树匹配，十几万条也不影响匹配速度；Stash 同样支持 domain + text。
+#   proxy：经代理下载，ruleset.skk.moe 在国内直连不稳定时也能更新(Stash 忽略此键)。
+rule-providers:
+  reject-domainset:                        # 广告/跟踪，Sukka reject domainset
+    type: http
+    behavior: domain
+    format: text
+    url: https://ruleset.skk.moe/Clash/domainset/reject.txt
+    interval: 86400
+    proxy: 🚀 节点选择
