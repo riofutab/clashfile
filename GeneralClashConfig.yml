@@ -79,6 +79,10 @@ dns:
   nameserver:                              # 境外/代理域名 → 境外DoH，经「节点选择」出口查询(快 + 不泄露)
     - 'https://cloudflare-dns.com/dns-query#🚀 节点选择'
     - 'https://dns.google/dns-query#🚀 节点选择'
+  # ★Stash 专用(mihomo 忽略此键)：Stash 文档没有 nameserver 后缀「#🚀 节点选择」的写法，DNS 默认直接出站，
+  #   上面的境外 DoH 在国内直连会被干扰。打开后 DNS 查询按规则走，DoH 域名命中代理规则即经代理查询。
+  #   不会递归：节点域名由 proxy-server-nameserver(纯IP)解析。
+  follow-rule: true
   nameserver-policy:                       # 值必须单字符串(手机核心不收列表)
     '+.teamway.com': '10.0.60.4'                                       # 内网 → 内网DNS
     'geosite:cn,private': '223.5.5.5'                                  # 国内域名 → 阿里DNS(明文,快)

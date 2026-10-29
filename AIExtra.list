@@ -1,0 +1,14 @@
+# NAME: AIExtra
+# 用途: 上游 AI 列表没收、覆盖检查(2026-10-29)发现落到节点选择或漏网之鱼的 AI 站
+# 对应网站: Character.AI, Suno, Together AI, Replicate, v0, Lovable, Bolt
+DOMAIN-SUFFIX,character.ai
+DOMAIN-SUFFIX,suno.com
+DOMAIN-SUFFIX,suno.ai
+DOMAIN-SUFFIX,together.ai
+DOMAIN-SUFFIX,replicate.com
+DOMAIN-SUFFIX,replicate.delivery
+DOMAIN-SUFFIX,v0.dev
+DOMAIN-SUFFIX,v0.app
+DOMAIN-SUFFIX,lovable.dev
+DOMAIN-SUFFIX,bolt.new
+DOMAIN-SUFFIX,stackblitz.com

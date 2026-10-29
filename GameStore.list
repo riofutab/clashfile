@@ -1,0 +1,19 @@
+# NAME: GameStore
+# 用途: 游戏商店/社区/账号页走代理；下载 CDN 不在这里，由 GameDownload/SteamCN 直连
+# 注意: gog.com/playstation.com/ea.com 等是整域后缀，ini 里必须排在下载 CDN 规则之后
+#       Steam 只收商店/社区/登录子域，不收 steampowered.com 整域(cm.steampowered.com 要直连)
+DOMAIN-SUFFIX,steamcommunity.com
+DOMAIN-SUFFIX,store.steampowered.com
+DOMAIN-SUFFIX,help.steampowered.com
+DOMAIN-SUFFIX,login.steampowered.com
+DOMAIN-SUFFIX,checkout.steampowered.com
+DOMAIN-SUFFIX,steam-chat.com
+DOMAIN-SUFFIX,store.epicgames.com
+DOMAIN,www.epicgames.com
+DOMAIN-SUFFIX,gog.com
+DOMAIN-SUFFIX,playstation.com
+DOMAIN-SUFFIX,xbox.com
+DOMAIN-SUFFIX,nintendo.com
+DOMAIN-SUFFIX,ea.com
+DOMAIN-SUFFIX,ubisoft.com
+DOMAIN-SUFFIX,battle.net

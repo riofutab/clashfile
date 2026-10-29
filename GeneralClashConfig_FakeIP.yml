@@ -102,6 +102,10 @@ dns:
   nameserver:                              # filter 命中域名与直连解析的兜底 → 境外DoH经代理(不泄露)
     - 'https://cloudflare-dns.com/dns-query#🚀 节点选择'
     - 'https://dns.google/dns-query#🚀 节点选择'
+  # ★Stash 专用(mihomo 忽略此键)：Stash 文档没有 nameserver 后缀「#🚀 节点选择」的写法，DNS 默认直接出站，
+  #   上面的境外 DoH 在国内直连会被干扰。打开后 DNS 查询按规则走，DoH 域名命中代理规则即经代理查询。
+  #   不会递归：节点域名由 proxy-server-nameserver(纯IP)解析。
+  follow-rule: true
   # ★直连出口的域名用国内DNS解析，不经代理 —— 代理不可用时直连仍然正常
   direct-nameserver:
     - 223.5.5.5
