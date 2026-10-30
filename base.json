@@ -1,0 +1,869 @@
+{
+ "log": {
+  "level": "warn",
+  "timestamp": true
+ },
+ "dns": {
+  "servers": [
+   {
+    "type": "udp",
+    "tag": "dns-intranet",
+    "server": "10.0.60.4"
+   },
+   {
+    "type": "udp",
+    "tag": "dns-local",
+    "server": "223.5.5.5"
+   },
+   {
+    "type": "https",
+    "tag": "dns-remote",
+    "server": "1.1.1.1",
+    "detour": "🚀 节点选择"
+   },
+   {
+    "type": "fakeip",
+    "tag": "dns-fakeip",
+    "inet4_range": "198.18.0.0/15"
+   }
+  ],
+  "rules": [
+   {
+    "domain_suffix": [
+     "teamway.com"
+    ],
+    "server": "dns-intranet"
+   },
+   {
+    "rule_set": [
+     "geosite-private",
+     "geosite-cn",
+     "geosite-connectivity-check"
+    ],
+    "server": "dns-local"
+   },
+   {
+    "domain_suffix": [
+     "lan",
+     "local",
+     "msftconnecttest.com",
+     "msftncsi.com",
+     "pool.ntp.org",
+     "time.edu.cn",
+     "ntp.org.cn",
+     "push.apple.com"
+    ],
+    "domain_regex": [
+     "^time\\.[^.]+\\.com$",
+     "^ntp\\.[^.]+\\.com$",
+     "^stun\\."
+    ],
+    "server": "dns-local"
+   },
+   {
+    "query_type": [
+     "A",
+     "AAAA"
+    ],
+    "server": "dns-fakeip"
+   }
+  ],
+  "final": "dns-remote",
+  "strategy": "ipv4_only"
+ },
+ "inbounds": [
+  {
+   "type": "tun",
+   "tag": "tun-in",
+   "address": [
+    "172.19.0.1/30"
+   ],
+   "auto_route": true,
+   "strict_route": true,
+   "stack": "mixed",
+   "route_exclude_address": [
+    "10.0.0.0/8",
+    "172.16.0.0/12",
+    "192.168.0.0/16",
+    "127.0.0.0/8",
+    "169.254.0.0/16",
+    "100.64.0.0/10",
+    "224.0.0.0/4",
+    "255.255.255.255/32"
+   ]
+  },
+  {
+   "type": "mixed",
+   "tag": "mixed-in",
+   "listen": "127.0.0.1",
+   "listen_port": 2080
+  }
+ ],
+ "outbounds": [
+  {
+   "type": "direct",
+   "tag": "DIRECT"
+  },
+  {
+   "type": "selector",
+   "tag": "🚀 节点选择",
+   "$items": [
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(剩余|套餐|距离)"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "📲 电报消息",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "📹 油管视频",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🛒 Amazon",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🎞️ 巴哈姆特",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🌍 国外媒体",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🌈 谷歌服务",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🐙 GitHub",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🤖 OpenAi",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🎵 TikTok",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🏰 DisneyPlus",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🏦 银行代理",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "💳 国际支付",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🐦 Twitter",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "📘 Meta社交",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "👽 Reddit",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🎥 奈飞视频",
+   "$items": [
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🎧 Spotify",
+   "$items": [
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🧲 PT站点",
+   "$items": [
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*(Residential|Hong Kong|HK))"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "📺 哔哩哔哩",
+   "$items": [
+    {
+     "ref": "🎯 全球直连"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🌏 国内媒体",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "📢 谷歌FCM",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🔍 微软Bing",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "☁️ 微软云盘",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "Ⓜ️ 微软服务",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🍎 苹果服务",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🎮 游戏平台",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🕹️ 游戏商店",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🎶 网易音乐",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🎯 全球直连",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🏛️ 银行直连",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  },
+  {
+   "type": "selector",
+   "tag": "🐟 漏网之鱼",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ],
+   "interrupt_exist_connections": false
+  }
+ ],
+ "route": {
+  "rule_set": [
+   {
+    "type": "remote",
+    "tag": "geosite-category-ai-!cn",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ai-!cn.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-twitter",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/twitter.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-facebook",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/facebook.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-instagram",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/instagram.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-whatsapp",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/whatsapp.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-reddit",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/reddit.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-category-ntp",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ntp.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "reject-domainset",
+    "format": "source",
+    "url": "https://ruleset.skk.moe/sing-box/domainset/reject.json",
+    "download_detour": "🚀 节点选择",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-category-pt",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-pt.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-paypal",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/paypal.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-stripe",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/stripe.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-category-cryptocurrency",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-cryptocurrency.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-category-game-platforms-download",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-game-platforms-download.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-googlefcm",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/googlefcm.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-youtube",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/youtube.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-google",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/google.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-github",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/github.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-bing",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/bing.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-onedrive",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/onedrive.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-microsoft",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/microsoft.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-apple",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/apple.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-telegram",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/telegram.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-netflix",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/netflix.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-bahamut",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/bahamut.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-bilibili",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/bilibili.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-disney",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/disney.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-spotify",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/spotify.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-tiktok",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/tiktok.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-cn",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geoip-cn",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-category-ads-all",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ads-all.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-geolocation-!cn",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-private",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   },
+   {
+    "type": "remote",
+    "tag": "geosite-connectivity-check",
+    "format": "binary",
+    "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/connectivity-check.srs",
+    "download_detour": "DIRECT",
+    "update_interval": "1d"
+   }
+  ],
+  "final": "🐟 漏网之鱼",
+  "auto_detect_interface": true,
+  "default_domain_resolver": {
+   "server": "dns-local"
+  }
+ },
+ "experimental": {
+  "cache_file": {
+   "enabled": true,
+   "store_fakeip": true
+  },
+  "clash_api": {
+   "external_controller": "127.0.0.1:9090",
+   "default_mode": "Rule"
+  }
+ }
+}
