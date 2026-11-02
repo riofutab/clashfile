@@ -1,8 +1,9 @@
 DOMAIN-KEYWORD,bankofamerica
 DOMAIN-SUFFIX,bankofamerica.com
 
-DOMAIN-KEYWORD,chase
+# 大通只写后缀：关键词 chase 会匹配所有含 purchase 的域名
 DOMAIN-SUFFIX,chase.com
+DOMAIN-SUFFIX,chasecdn.com
 
 DOMAIN-KEYWORD,bochk
 DOMAIN-SUFFIX,bochk.com
@@ -20,3 +21,10 @@ DOMAIN-SUFFIX,cncbinternational.com
 
 
 DOMAIN-KEYWORD,minimaxi
+
+# 香港银行直连（渣打、富途、盈透用 ini 里的 GEOSITE）
+DOMAIN-SUFFIX,za.group
+DOMAIN-SUFFIX,zabank.com
+DOMAIN-SUFFIX,zabank.hk
+DOMAIN-SUFFIX,mox.com
+DOMAIN-SUFFIX,hangseng.com

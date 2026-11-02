@@ -3,8 +3,12 @@ DOMAIN-KEYWORD,amextravel
 DOMAIN-SUFFIX,amextravel.com
 DOMAIN-SUFFIX,americanexpress.com
 
-DOMAIN-KEYWORD,citi
+# 花旗只写后缀：关键词 citi 会误伤中信（citicbank.com、citics.com）
 DOMAIN-SUFFIX,citi.com
+DOMAIN-SUFFIX,citibank.com
+DOMAIN-SUFFIX,citibankonline.com
+DOMAIN-SUFFIX,citicards.com
+DOMAIN-SUFFIX,citigroup.com
 
 DOMAIN-KEYWORD,thankyou
 DOMAIN-SUFFIX,thankyou.com
@@ -54,3 +58,25 @@ DOMAIN-SUFFIX,harvardfcu.org
 DOMAIN-KEYWORD,equifax
 DOMAIN-SUFFIX,equifax.com
 
+# 其他美国银行、券商、信用局、政府财税：机房 IP 容易触发风控，走家宽
+DOMAIN-SUFFIX,discover.com
+DOMAIN-SUFFIX,usbank.com
+DOMAIN-SUFFIX,zellepay.com
+DOMAIN-SUFFIX,ally.com
+DOMAIN-SUFFIX,chime.com
+DOMAIN-SUFFIX,robinhood.com
+DOMAIN-SUFFIX,marcus.com
+DOMAIN-SUFFIX,pnc.com
+DOMAIN-SUFFIX,tdbank.com
+DOMAIN-SUFFIX,navyfederal.org
+DOMAIN-SUFFIX,penfed.org
+DOMAIN-SUFFIX,becu.org
+DOMAIN-SUFFIX,firsttechfed.com
+DOMAIN-SUFFIX,synchrony.com
+DOMAIN-SUFFIX,bilt.com
+DOMAIN-SUFFIX,mercury.com
+DOMAIN-SUFFIX,experian.com
+DOMAIN-SUFFIX,transunion.com
+DOMAIN-SUFFIX,creditkarma.com
+DOMAIN-SUFFIX,irs.gov
+DOMAIN-SUFFIX,ssa.gov
