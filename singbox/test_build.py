@@ -57,11 +57,19 @@ class BuildTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             build(INI, clash('RULE-SET,nope,🚀 节点选择'))
 
+    def test_ip_asn_becomes_remote_asn_rule_set(self):
+        base, rules, skipped = self.rules('IP-ASN,132203,🎯 全球直连,no-resolve', 'IP-ASN,45090,🎯 全球直连,no-resolve')
+        self.assertEqual(rules, [{'outbound': '🎯 全球直连', 'rule_set': ['asn-132203', 'asn-45090']}])
+        sets = {s['tag']: s for s in base['route']['rule_set']}
+        self.assertTrue(sets['asn-132203']['url'].endswith('/asn/AS132203.srs'))
+        self.assertEqual(sets['asn-132203']['format'], 'binary')
+        self.assertEqual(skipped, {})
+
     def test_match_sets_final_and_unsupported_rules_are_counted(self):
-        base, rules, skipped = self.rules('IP-ASN,13335,🚀 节点选择', 'MATCH,🎯 全球直连')
+        base, rules, skipped = self.rules('URL-REGEX,^https://x,🚀 节点选择', 'MATCH,🎯 全球直连')
         self.assertEqual(rules, [])
         self.assertEqual(base['route']['final'], '🎯 全球直连')
-        self.assertEqual(skipped, {'IP-ASN': 1})
+        self.assertEqual(skipped, {'URL-REGEX': 1})
 
     def test_domain_wildcard_becomes_anchored_regex(self):
         _, rules, _ = self.rules('DOMAIN-WILDCARD,beacons*.gvt?.com,🛑 广告拦截')

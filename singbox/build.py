@@ -37,6 +37,7 @@ OTHER_FIELDS = {
 PORT_FIELDS = {'source_port', 'port'}
 
 GEO_URL = 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/{kind}/{name}.srs'
+ASN_URL = 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/asn/AS{asn}.srs'
 # 与 GeneralClashConfig_FakeIP.yml 的 rule-providers 一一对应，名字必须一致
 PROVIDERS = {
     'reject-domainset': {
@@ -144,13 +145,23 @@ def convert_rules(clash_rules, rejects):
                 'download_detour': 'DIRECT', 'update_interval': '1d',
             }
             field, value, group_key = 'rule_set', tag, 'rule_set'
+        elif kind == 'IP-ASN':
+            # sing-box 没有 ASN 条件，改用 MetaCubeX 按 ASN 生成的 IP 段规则集。
+            # 与 Clash 的 no-resolve 一致：sing-box 路由不会为匹配 IP 规则去解析域名
+            tag = f'asn-{value}'
+            rule_sets[tag] = {
+                'type': 'remote', 'tag': tag, 'format': 'binary',
+                'url': ASN_URL.format(asn=value),
+                'download_detour': 'DIRECT', 'update_interval': '1d',
+            }
+            field, value, group_key = 'rule_set', tag, 'rule_set'
         elif kind == 'RULE-SET':
             if value not in PROVIDERS:
                 raise SystemExit(f'RULE-SET {value} 没有对应的 sing-box 规则集，先在 PROVIDERS 里加上')
             rule_sets[value] = PROVIDERS[value]
             field, group_key = 'rule_set', 'rule_set'
         else:
-            # IP-ASN / USER-AGENT / URL-REGEX / 逻辑规则：sing-box 没有等价条件
+            # USER-AGENT / URL-REGEX / 逻辑规则：sing-box 没有等价条件
             skipped[kind] = skipped.get(kind, 0) + 1
             continue
 
