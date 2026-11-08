@@ -1,0 +1,74 @@
+name: 生成 Shadowrocket 配置模板 (shadowrocket-dist)
+
+# famsub Worker 的 /s/<token>?sr = 本模板 + 按节点名展开的策略组；节点本身由首页订阅（base64）提供。
+# 规则取自 subconverter 用 riofutab_xboard.ini 生成的 Clash 配置，与 Clash 订阅逐条一致。
+on:
+  schedule:
+    - cron: '10 20 * * *'   # 每天 UTC 20:10 ≈ 北京 04:10，在 update-ai.yml 之后
+  workflow_dispatch:
+  push:
+    branches: [master]
+    # 复用 singbox/build.py 的解析函数，它改了也要重新生成
+    paths: ['shadowrocket/**', 'singbox/build.py', '.github/workflows/shadowrocket.yml']
+
+permissions:
+  contents: write
+
+env:
+  INI_URL: https://raw.githubusercontent.com/riofutab/ACL4SSR/main/Clash/config/riofutab_xboard.ini
+  SUBAPI: https://subconverter.paeony.org/sub
+  # 低于这些下限说明 subconverter 或上游规则拉取出了问题，宁可不发布，也不能用残缺模板覆盖正常的
+  MIN_RULES: 30000
+  MIN_RULES_BYTES: 1500000
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 单元测试
+        run: python3 -m unittest shadowrocket.test_build
+
+      - name: 拉取 ini 与 Clash 规则
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sr
+          curl -fsSL --max-time 60 "$INI_URL" -o /tmp/sr/xboard.ini
+          # 规则与节点无关，给一个假节点即可；UA 不能是 Python 默认值（Cloudflare 会拦）
+          node='hysteria2://x@example.com:443?sni=example.com#placeholder'
+          curl -fsSL --max-time 300 -A 'shadowrocket-dist/1.0' -G "$SUBAPI" \
+            --data-urlencode target=clash --data-urlencode "url=$node" \
+            --data-urlencode "config=$INI_URL" -d list=false -d add_emoji=false -d remove_emoji=false \
+            -o /tmp/sr/clash.yaml
+          grep -q '^rules:' /tmp/sr/clash.yaml
+
+      - name: 生成模板
+        run: python3 -m shadowrocket.build /tmp/sr/xboard.ini /tmp/sr/clash.yaml /tmp/sr/out
+
+      - name: 体积与条数下限
+        run: |
+          set -euo pipefail
+          n=$(grep -c ',' /tmp/sr/out/shadowrocket-rules.conf)
+          b=$(stat -c %s /tmp/sr/out/shadowrocket-rules.conf)
+          echo "rules=$n bytes=$b"
+          [ "$n" -ge "$MIN_RULES" ] && [ "$b" -ge "$MIN_RULES_BYTES" ]
+
+      - name: 发布到 shadowrocket-dist 分支（仅在有变化时）
+        run: |
+          set -euo pipefail
+          files="shadowrocket.json shadowrocket-rules.conf"
+          if git fetch -q origin shadowrocket-dist 2>/dev/null; then
+            same=1
+            for f in $files; do git show "FETCH_HEAD:$f" | cmp -s - "/tmp/sr/out/$f" || same=0; done
+            if [ "$same" = 1 ]; then echo "无变化，跳过发布"; exit 0; fi
+          fi
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git checkout -q --orphan shadowrocket-dist-new
+          git rm -rq --cached .
+          for f in $files; do cp "/tmp/sr/out/$f" .; done
+          git add $files
+          git commit -qm "chore: 更新 Shadowrocket 配置模板"
+          # 单提交分支、强推：只保留最新模板，不在 master 上堆每日提交
+          git push -qf origin HEAD:shadowrocket-dist
