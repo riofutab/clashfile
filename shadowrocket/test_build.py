@@ -71,6 +71,7 @@ class BuildTest(unittest.TestCase):
         self.assertEqual(groups['🚀 节点选择'], [{'re': '^(?!剩余)(?!.*家宽)'}, {'re': '家宽'}, {'ref': 'DIRECT'}])
         self.assertEqual(groups['🛑 广告拦截'], [{'ref': 'REJECT'}, {'ref': 'DIRECT'}])
         self.assertIn('*.teamway.com = server:10.0.60.4', head['head'])
+        self.assertIn('block-quic = all-proxy', head['head'])
 
     def test_rule_with_undefined_policy_fails_the_build(self):
         with self.assertRaises(SystemExit):

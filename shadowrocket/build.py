@@ -35,6 +35,8 @@ USER_AGENT = 'clashfile-shadowrocket/1.0'
 BUILTIN_POLICIES = {'DIRECT', 'REJECT'}
 
 # 对应 Clash 模板：局域网/私网不进 TUN 也不走代理；公司内网域名用内网 DNS（会解析出私网地址）
+# block-quic：走代理的 QUIC 直接拒绝，让浏览器和 App 立即改用 TCP。不加时每个新站点第一次打开
+#   都可能要等 QUIC 超时才退回 TCP（2026-11-08 反馈首次打开明显慢于 Stash，节点相同）
 LAN = '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8,169.254.0.0/16,100.64.0.0/10'
 HEAD = f"""[General]
 ipv6 = false
@@ -43,6 +45,7 @@ dns-server = https://dns.alidns.com/dns-query,https://doh.pub/dns-query,223.5.5.
 fallback-dns-server = system
 private-ip-answer = true
 dns-direct-fallback-proxy = true
+block-quic = all-proxy
 skip-proxy = {LAN},localhost,*.local,captive.apple.com
 tun-excluded-routes = {LAN},224.0.0.0/4,255.255.255.255/32
 
