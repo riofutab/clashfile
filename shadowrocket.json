@@ -1,0 +1,465 @@
+{
+ "head": "[General]\nipv6 = false\nprefer-ipv6 = false\ndns-server = https://dns.alidns.com/dns-query,https://doh.pub/dns-query,223.5.5.5,119.29.29.29\nfallback-dns-server = system\nprivate-ip-answer = true\ndns-direct-fallback-proxy = true\nblock-quic = all-proxy\nskip-proxy = 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8,169.254.0.0/16,100.64.0.0/10,localhost,*.local,captive.apple.com\ntun-excluded-routes = 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8,169.254.0.0/16,100.64.0.0/10,224.0.0.0/4,255.255.255.255/32\n\n[Host]\n*.teamway.com = server:10.0.60.4\n\n",
+ "groups": [
+  {
+   "tag": "🚀 节点选择",
+   "$items": [
+    {
+     "re": "^(?!剩余|套餐|距离)(?=.*US \\d)(?!.*Residential)"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*US \\d)(?!.*Residential)"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(剩余|套餐|距离)"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "📲 电报消息",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "📹 油管视频",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🛒 Amazon",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "^(?!.*IX).*Residential"
+    },
+    {
+     "re": "IX.*Residential"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🎞️ 巴哈姆特",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🌍 国外媒体",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🌈 谷歌服务",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🐙 GitHub",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🤖 OpenAi",
+   "$items": [
+    {
+     "re": "^(?!.*IX).*Residential"
+    },
+    {
+     "re": "IX.*Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)(?!.*HK \\d)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🎵 TikTok",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🏰 DisneyPlus",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🏦 银行代理",
+   "$items": [
+    {
+     "re": "^(?!.*IX).*Residential"
+    },
+    {
+     "re": "IX.*Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "💳 国际支付",
+   "$items": [
+    {
+     "re": "^(?!.*IX).*Residential"
+    },
+    {
+     "re": "IX.*Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🐦 Twitter",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "📘 Meta社交",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "👽 Reddit",
+   "$items": [
+    {
+     "re": "Residential"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🎥 奈飞视频",
+   "$items": [
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    }
+   ]
+  },
+  {
+   "tag": "🎧 Spotify",
+   "$items": [
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "re": "Residential"
+    }
+   ]
+  },
+  {
+   "tag": "🧲 PT站点",
+   "$items": [
+    {
+     "re": "Hong Kong|HK"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?!.*(Residential|Hong Kong|HK))"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "📺 哔哩哔哩",
+   "$items": [
+    {
+     "ref": "🎯 全球直连"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🌏 国内媒体",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "📢 谷歌FCM",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🔍 微软Bing",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "☁️ 微软云盘",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "Ⓜ️ 微软服务",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🍎 苹果服务",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🎮 游戏平台",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🕹️ 游戏商店",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🎶 网易音乐",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🎯 全球直连",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    },
+    {
+     "ref": "🚀 节点选择"
+    }
+   ]
+  },
+  {
+   "tag": "🏛️ 银行直连",
+   "$items": [
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "📈 香港券商",
+   "$items": [
+    {
+     "re": "^(?!剩余|套餐|距离)(?=.*HK \\d)(?!.*Residential)"
+    },
+    {
+     "re": "^(?!剩余|套餐|距离)(?=.*US \\d)(?!.*Residential)"
+    },
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🛑 广告拦截",
+   "$items": [
+    {
+     "ref": "REJECT"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🍃 应用净化",
+   "$items": [
+    {
+     "ref": "REJECT"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  },
+  {
+   "tag": "🐟 漏网之鱼",
+   "$items": [
+    {
+     "ref": "🚀 节点选择"
+    },
+    {
+     "ref": "DIRECT"
+    }
+   ]
+  }
+ ]
+}
